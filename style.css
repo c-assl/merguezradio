@@ -1,0 +1,292 @@
+/* FONTS ---------------------------------------*/
+
+    /* Applique Anton uniquement aux h1 */
+    h1 {
+      font-family: 'Anton', sans-serif;
+      font-size: 4rem;
+      margin: 0;
+    }
+
+    /* Applique Ubuntu Mono uniquement aux paragraphes */
+    p {
+      font-family: 'Ubuntu Mono', monospace;
+      font-size: 1.2rem;
+    }
+
+/* CURSOR ---------------------------------------*/
+ 
+    body {
+      display: flex;
+      justify-content: space-between; /* .left à gauche, .right à droite */
+      align-items: stretch;           /* prend toute la hauteur du body */
+      height: 100vh;
+      margin: 0;
+      padding: 2rem;
+      box-sizing: border-box;
+      background: #0a0a0a;
+      color: white;
+      font-family: 'Ubuntu Mono', monospace;  
+      padding: 2rem; 
+      position: relative;   
+      user-select: none; /* empêche la sélection de texte */
+    }
+    
+/* FLEXBOX --------------------------------------*/   
+    
+    .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0;
+      line-height: 1;
+      margin-left :3%;
+      margin-top : 3%;
+    }
+
+    
+    .left h1 { 
+      font-size: 8rem; 
+      margin: 0; 
+      font-weight: bold; 
+    } 
+    
+    .left p { 
+      font-size: 1rem; 
+      margin: 0; 
+      opacity: 0.8; 
+    } 
+    
+   .right {
+      display: flex;
+      flex-direction: column; /* empile les éléments */
+      align-items: flex-start;  /* éléments alignés à gauche dans le bloc */
+      width: 350px;
+      margin: 2rem;              /* marge si besoin */
+      gap: 1rem;              /* espace entre éléments */
+    }
+
+
+    .bottom {
+      position: absolute;
+      bottom: 20px;
+      left: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+/* PLAYER ------------------------------*/ 
+
+    #radio-player {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Bouton Play → carré et pas trop grand */
+    #play-btn {
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1;
+    }
+
+    /* Bouton Play → image a l'interieur */
+    #play-icon {
+      width: 110%;
+      height: 110%;
+      object-fit: contain;
+    }
+
+    /* Cover → même taille que le bouton */
+    #cover-art {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #222;
+      object-fit: contain;
+    }
+
+    /* Bloc texte titre + artiste */
+    .track-info {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      line-height: 0;
+    }
+
+    #track-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 1rem;
+    }
+
+    #artist-name {
+      font-size: 14px;
+      opacity: 0.8;
+      margin: 1rem;
+    }
+
+
+/* TIMER --------------------------------- */
+
+    .timer-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    #timer-container {
+      margin-top: 15px;
+      margin-left: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0);
+      border-radius: 12px;
+      padding: 10px 15px;
+    }
+
+    #slider-wrapper {
+      position: relative;
+      width: 165px;
+      height: 10px;
+    }
+
+    #slider-track {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: #ffffff;
+      border-radius: 3px;
+      transform: translateY(-50%);
+    }
+
+    #clock-thumb {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 50px; 
+        height: 50px; 
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+    }
+
+
+    #timer-display {
+        font-family: 'Ubuntu Mono', monospace;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+        min-width: 70px; /* largeur minimale pour ne pas bouger */
+        text-align: left; /* aligne le texte à gauche pour ne pas chevaucher la lune */
+        margin-left: 15px; /* décale légèrement à droite */
+    }
+
+    #timer-slider {
+      width: 200px;
+    }
+
+
+/* MOUSE DRAW -------------------------------- */
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Canvas en arrière-plan */
+    canvas {
+      position: fixed; /* ou absolute */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* permet de cliquer à travers le canvas si nécessaire */
+      z-index: 1000;       /* au-dessus de tout le reste */
+      display: block;      /* s’assure qu’il n’est pas inline */
+    }
+
+
+
+
+/* MOBILE -------------------------------------- */
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        justify-content: flex-start;
+        text-align: center;
+      }
+      .right {
+        margin-top: 2rem;
+      }
+      
+    }
+
+
+
+/* Onglets planning, a propos, next shows ---------------------- */ 
+
+    /* Style général du tableau */
+    #planning {
+      width: 100%;
+      max-width: 5000px;
+      border-collapse: collapse; /* supprime les doubles bordures */
+      margin-top: 20px;
+      color: yellow;            /* texte en jaune */
+      font-family: 'Ubuntu Mono', monospace; /* optionnel, pour le thème */
+      table-layout: fixed; /* taille des colonnes fixée */
+    }
+
+    /* Supprimer toutes les bordures */
+    #planning th,
+    #planning td {
+      border: none;        /* pas de lignes autour des cellules */
+      padding: 8px;        /* espace à l'intérieur des cellules */
+      text-align: left;    /* texte aligné à gauche */
+      width: 25%; /* 100% / 7 colonnes = ~14.28% chacune */
+      font-size: 14px;
+    }
+
+    /* titre en gras */
+    #planning th {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+
+
+    .bottom .buttons {
+      display: flex;
+      gap: 10px; /* espace entre les deux boutons */
+    }
+
+    .bottom button {
+      background: white;
+      color: black;
+      font-family: 'Ubuntu Mono', monospace;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+    .bottom button:hover {
+      background: yellow;
+    }

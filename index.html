@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Import de la police Ubuntu Mono et Anton -->
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+
+<!-- HEADER --------------------------------- -->
+
+<head>
+  <meta charset="UTF-8">
+  <title>2AM. radio for friends</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/icons/moon.png">
+
+  <!-- Fichiers JS <script src="/socket.io/socket.io.js"></script> -->
+  <script src="background_change.js" defer></script>
+  <script src="timer.js" defer></script>
+  <script src="btnBar.js" defer></script>
+  <script src="stream.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script> <!-- Howler.js pour le streaming -->
+  <script src="./mousedraw.js" defer></script>
+  
+  
+
+  <!-- CSS externe -->
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<!-- BODY ----------------------------------->
+
+<body>
+  
+  <!-- MOUSE DRAW -------------------------->
+
+  <canvas id="canvas"></canvas>
+
+
+  <!-- CLASS LEFT -------------------------->
+
+  <div class="left">
+    <h1>2AM.</h1>
+    <p>ambient music for friends</p>
+  </div>
+
+  <!-- CLASS RIGHT -------------------------->
+
+  <div class="right">
+
+    <!-- Player -->
+    <div id="radio-player">
+      <button id="play-btn">
+        <img id="play-icon"
+        src="https://static.vecteezy.com/system/resources/previews/026/997/083/large_2x/play-button-pixelated-rgb-color-ui-icon-music-player-bar-play-multimedia-file-simplistic-filled-8bit-graphic-element-retro-style-design-for-arcade-video-game-art-editable-isolated-image-vector.jpg"
+        alt="Play">
+      </button>
+        <div class="track-info">
+          <img id="cover-art" src="" alt="Cover">
+          <div>
+            <div id="track-title">Titre...</div>
+            <div id="artist-name">Artiste...</div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Timer -->
+    <div id="timer-container">
+      <div id="slider-wrapper">
+        <div id="slider-track"></div>
+        <img id="clock-thumb" src="images/icons/clock.png" alt="Lune">
+      </div>
+      <div id="timer-display">00:00</div>
+    </div>
+  </div>
+
+  <!-- CLASS BOTTOM -------------------------->
+
+  <div class="bottom">
+
+    <!-- Planning caché par défaut -->
+    <table id="planning" style="display:none; border-collapse: collapse; margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>Lundi</th>
+          <th>Mardi</th>
+          <th>Mercredi</th>
+          <th>Jeudi</th>
+          <th>Vendredi</th>
+          <th>Samedi</th>
+          <th>Dimanche</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - video games  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
+          <td>09h - sunshine ambient mix <br> 13h - idm <br> 17h - juicy jungle  <br> 19h - film ost <br> 20h - uk bass  <br> 23h - ambient nuit </td>
+          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - field recordings  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
+          <td>09h - sunshine ambient mix <br> 13h - idm <br> 17h - juicy jungle  <br> 19h - video games  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
+          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - film ost  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
+          <td>09h - sunshine ambient mix <br> 13h - idm <br> 17h - juicy jungle  <br> 19h - field recordings  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
+          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - ambient with a K  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Texte "À propos" caché au départ -->
+    <div id="about-text" style="display:none; max-width: 600px; margin-top: 10px;">
+      <p>
+        Ce projet explore l'interaction entre l'utilisateur et l'interface à travers des effets visuels 
+        dynamiques et un design minimaliste. Le but est de créer une expérience immersive et élégante.
+      </p>
+    </div>
+
+    <div class="buttons">
+      <button id="toggle-planning">Planning</button>
+      <button id="toggle-about">À propos</button>
+    </div>
+  </div>
+
+
+</body>
+</html>
