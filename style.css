@@ -241,6 +241,11 @@
       .right {
         margin-top: 2rem;
       }
+
+      /* Ici on adapte la taille du h1 */
+      .left h1 {
+        font-size: 6rem;
+      }
       
     }
 
