@@ -30,29 +30,6 @@ function updateDisplay(minutes, seconds = 0) {
   clock.style.left = `${minutesToPosition(minutes)}px`;
 }
 
-function lancerPluieMerguez() {
-  const rainContainer = document.getElementById("merguez-rain");
-  
-  for (let i = 0; i < 30; i++) { // nombre de merguez
-    const merguez = document.createElement("div");
-    merguez.classList.add("merguez");
-    merguez.textContent = "🌭"; // tu peux remplacer par <img src="merguez.png">
-    
-    // Position horizontale aléatoire
-    merguez.style.left = Math.random() * 100 + "vw";
-    // Taille aléatoire
-    merguez.style.fontSize = (1 + Math.random() * 2) + "rem";
-    // Durée de chute aléatoire
-    merguez.style.animationDuration = (3 + Math.random() * 3) + "s";
-    
-    rainContainer.appendChild(merguez);
-    
-    // Nettoyage après animation
-    merguez.addEventListener("animationend", () => merguez.remove());
-  }
-}
-
-
 // Lancer le timer
 function startTimer(minutes) {
   clearInterval(timerInterval);
@@ -71,9 +48,6 @@ function startTimer(minutes) {
     if (remaining <= 0) {
       clearInterval(timerInterval);
       localStorage.removeItem('timerEnd');
-  
-      // 🎉 lancer la pluie de merguez
-      lancerPluieMerguez();
 
       // 🔥 Stoppe le player
       if (isPlaying) {

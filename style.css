@@ -95,7 +95,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1;
     }
 
     /* Bouton Play → image a l'interieur */
@@ -118,27 +117,21 @@
     /* Bloc texte titre + artiste */
     .track-info {
       display: flex;
-      flex-wrap: wrap;              /* permet de passer à la ligne */
-      justify-content: flex-start;  /* garde l’alignement correct */
-      align-items: center;
-      gap: 0.5rem;                  /* espace constant entre titre et artiste */
-      max-width: 100%;              /* ne déborde jamais du parent */
+      flex-direction: row;
+      justify-content: center;
+      line-height: 0;
     }
 
     #track-title {
       font-size: 18px;
-      margin: 0.2rem;
-      font-weight: bold;                    
-      overflow-wrap: break-word;    /* casse le mot si trop long */
-      word-break: break-word;       /* compatibilité */
-      flex: 1 1 auto;               /* autorise à se réduire et s’étendre */
-      min-width: 0;
+      font-weight: bold;
+      margin: 1rem;
     }
 
     #artist-name {
       font-size: 14px;
       opacity: 0.8;
-      margin: 0.2rem;
+      margin: 1rem;
     }
 
 
@@ -241,11 +234,6 @@
       .right {
         margin-top: 2rem;
       }
-
-      /* Ici on adapte la taille du h1 */
-      .left h1 {
-        font-size: 6rem;
-      }
       
     }
 
@@ -262,6 +250,7 @@
       color: yellow;            /* texte en jaune */
       font-family: 'Ubuntu Mono', monospace; /* optionnel, pour le thème */
       table-layout: fixed; /* taille des colonnes fixée */
+      font-size: 18px;
     }
 
     /* Supprimer toutes les bordures */
@@ -271,13 +260,13 @@
       padding: 8px;        /* espace à l'intérieur des cellules */
       text-align: left;    /* texte aligné à gauche */
       width: 25%; /* 100% / 7 colonnes = ~14.28% chacune */
-      font-size: 14px;
+      font-size: 18px;
     }
 
     /* titre en gras */
     #planning th {
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
     }
 
 
@@ -301,29 +290,3 @@
     .bottom button:hover {
       background: yellow;
     }
-
-    
-/* Nasty merguez */
-    #merguez-rain {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none; /* ne bloque pas les clics */
-      overflow: hidden;
-      z-index: 2000;
-    }
-    
-    .merguez {
-      position: absolute;
-      top: -50px;
-      font-size: 2rem;
-      animation: fall linear forwards;
-    }
-    
-    @keyframes fall {
-      from { transform: translateY(0); opacity: 1; }
-      to { transform: translateY(110vh); opacity: 0; }
-    }
-    

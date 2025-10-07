@@ -19,16 +19,14 @@
   <script src="btnBar.js" defer></script>
   <script src="stream.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script> <!-- Howler.js pour le streaming -->
-  <script src="./mousedraw.js" defer></script>
+  <script src="mousedraw.js" defer></script>
+  <script src="APIplanning.js"></script>
   
-  
-
   <!-- CSS externe -->
   <link rel="stylesheet" href="./style.css">
 
 </head>
 
-<div id="merguez-rain"></div>
 <!-- BODY ----------------------------------->
 
 <body>
@@ -79,31 +77,25 @@
 
   <div class="bottom">
 
-    <!-- Planning caché par défaut -->
-    <table id="planning" style="display:none; border-collapse: collapse; margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Lundi</th>
-          <th>Mardi</th>
-          <th>Mercredi</th>
-          <th>Jeudi</th>
-          <th>Vendredi</th>
-          <th>Samedi</th>
-          <th>Dimanche</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - video games  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
-          <td>09h - sunshine ambient mix <br> 13h - idm <br> 17h - juicy jungle  <br> 19h - film ost <br> 20h - uk bass  <br> 23h - ambient nuit </td>
-          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - field recordings  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
-          <td>09h - sunshine ambient mix <br> 13h - idm <br> 17h - juicy jungle  <br> 19h - video games  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
-          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - film ost  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
-          <td>09h - sunshine ambient mix <br> 13h - idm <br> 17h - juicy jungle  <br> 19h - field recordings  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
-          <td>09h - sunshine ambient mix <br> 13h - ambient beat <br> 17h - jazzz  <br> 19h - ambient with a K  <br> 20h - uk bass  <br> 23h - ambient nuit </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Tableau Planning -->
+<table id="planning" style="display:none" >
+  <thead>
+    <tr>
+      <th>Lundi</th>
+      <th>Mardi</th>
+      <th>Mercredi</th>
+      <th>Jeudi</th>
+      <th>Vendredi</th>
+      <th>Samedi</th>
+      <th>Dimanche</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="planning-body">
+      <!-- Le contenu sera rempli en JS -->
+    </tr>
+  </tbody>
+</table>
 
     <!-- Texte "À propos" caché au départ -->
     <div id="about-text" style="display:none; max-width: 600px; margin-top: 10px;">
