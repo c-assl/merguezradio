@@ -1,82 +1,145 @@
-/* FONTS ---------------------------------------*/
+/* FONTS */
 
-    /* Applique Anton uniquement aux h1 */
+    /* Applique Anton aux h1 */
     h1 {
       font-family: 'Anton', sans-serif;
       font-size: 4rem;
       margin: 0;
+      color: yellow;
     }
 
-    /* Applique Ubuntu Mono uniquement aux paragraphes */
+    /* Applique Ubuntu Mono aux paragraphes */
     p {
       font-family: 'Ubuntu Mono', monospace;
       font-size: 1.2rem;
+      color: yellow;
     }
 
-/* CURSOR ---------------------------------------*/
+/* BODY */
  
     body {
       display: flex;
       justify-content: space-between; /* .left à gauche, .right à droite */
       align-items: stretch;           /* prend toute la hauteur du body */
       height: 100vh;
-      margin: 0;
+      margin: 20px;
       padding: 2rem;
       box-sizing: border-box;
       background: #0a0a0a;
-      color: white;
+      color: yellow;
       font-family: 'Ubuntu Mono', monospace;  
       padding: 2rem; 
       position: relative;   
       user-select: none; /* empêche la sélection de texte */
     }
+
+/* Adaptation mobile */
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        justify-content: flex-start;
+        text-align: center;
+      }
+      .stream {
+        margin-top: 2rem;
+      }
+      .titre h1 {
+        font-size: 4rem;
+        }
+
+    }
     
-/* FLEXBOX --------------------------------------*/   
+/* Mouse draw  */
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Canvas en arrière-plan */
+    canvas {
+      position: fixed; 
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; 
+      z-index: 1000;      
+      display: block;     
+    }
+
+/* CLASS TITRE : Titre et sous titre */   
     
-    .left {
+    .titre {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       gap: 0;
       line-height: 1;
-      margin-left :3%;
-      margin-top : 3%;
+      margin-left: auto; /* met le bloc a droite, c'est celui ou il y a le titre */
+      margin-right: 20px;
+      margin-top : 20px;
     }
 
-    
-    .left h1 { 
+    .titre h1 { 
       font-size: 8rem; 
       margin: 0; 
       font-weight: bold; 
     } 
     
-    .left p { 
+    .titre p { 
       font-size: 1rem; 
       margin: 0; 
       opacity: 0.8; 
     } 
-    
-   .right {
+
+    /* Boutons */
+    .titre .buttons {
+      display: flex;
+      gap: 10px; /* espace entre les deux boutons */
+      justify-content: flex-end;
+    }
+
+    .titre button {
+      background: rgba(255, 255, 255, 0);
+      height: 60px;
+      width: 60px;
+      border-radius: 20px;
+      border-color: rgba(255, 255, 0, 0);
+      padding: 12px 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .titre button:hover {
+      background: rgba(255, 255, 0, 0);
+    }
+
+    .titre button img {
+      transition: transform 0.3s ease; /* animation douce pour l'agrandissement */
+      width: 30px;
+    }
+
+    .titre button:hover img {
+      transform: scale(1.3); /* agrandit l'icône de 1.3 fois */
+    }
+
+
+
+/* CLASS STREAM : Player, historique, à gauche */ 
+
+   .stream {
       display: flex;
       flex-direction: column; /* empile les éléments */
       align-items: flex-start;  /* éléments alignés à gauche dans le bloc */
-      width: 350px;
-      margin: 2rem;              /* marge si besoin */
+      width: 1500px;
+      margin-right: auto;              /* marge pour le mettre a gauche, c'est la ou il y a le player */
+      margin-left: 20px;
+      margin-top: 20px;
       gap: 1rem;              /* espace entre éléments */
     }
-
-
-    .bottom {
-      position: absolute;
-      bottom: 20px;
-      left: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-/* PLAYER ------------------------------*/ 
 
     #radio-player {
       display: flex;
@@ -84,31 +147,29 @@
       gap: 12px;
     }
 
-    /* Bouton Play → carré et pas trop grand */
+    /* Bouton Play */
     #play-btn {
       width: 60px;
       height: 60px;
-      border: none;
-      border-radius: 10px;
-      background: white;
+      border-radius: 20px;
+      border-color: rgba(255, 255, 0, 0);
+      background: rgba(255, 255, 255, 0);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1;
     }
 
     /* Bouton Play → image a l'interieur */
     #play-icon {
-      width: 110%;
-      height: 110%;
+      scale:2;
       object-fit: contain;
     }
 
     /* Cover → même taille que le bouton */
     #cover-art {
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       border-radius: 10px;
       object-fit: cover;
       background: #222;
@@ -141,189 +202,226 @@
       margin: 0.2rem;
     }
 
+    /* Timer Roro */
+  #timer-container {
+    background:transparent;
+    box-shadow:none;
+    border:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
 
-/* TIMER --------------------------------- */
+  #add-btn {
+    width: 60px;
+    height: 60px;
+    background:transparent;
+    border-radius: 20px;
+    border-color: rgba(255, 255, 0, 0);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:4px;
+    transition:background 0.2s ease;
+  }
+  
 
-    .timer-section {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-      margin-bottom: 20px;
+  #add-btn img {
+      transition: transform 0.3s ease; /* animation douce pour l'agrandissement */
+      width: 30px;
+  }
+
+  #add-btn:hover img {
+    transform: scale(1.3); /* agrandit l'icône de 1.3 fois */
+  }
+
+  #add-btn img {
+    width:28px;
+    height:28px;
+    display:block;
+  }
+
+  #time-display {
+    font-family: 'Ubuntu Mono', monospace;
+    font-size:1.4rem;
+    text-align:left; /* aligné à gauche */
+    min-width:84px;
+    border:none;
+    background:transparent;
+    color:yellow;
+    outline:none;
+    padding:6px 8px;
+    cursor:text;
+  }
+  #time-display:focus { background:rgba(255,255,255,0.1); border-radius:6px; }
+
+
+    /* historique */
+
+    #historique {
+      display: none;
     }
 
-    #timer-container {
-      margin-top: 15px;
-      margin-left: 15px;
+    .history-btn {
+      margin-top: 10px;          /* espace sous le minuteur */
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: yellow;
+      cursor: pointer;
+      font-family: 'Ubuntu Mono', monospace;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .history-btn img {
+      transition: transform 0.3s ease; /* animation douce pour l'agrandissement */
+    }
+    .history-btn:hover {
+      transform: scale(1.35);   /* petit effet de zoom */
+    }
+
+    .track {
       display: flex;
       align-items: center;
-      gap: 15px;
-      background: rgba(0, 0, 0, 0);
-      border-radius: 12px;
-      padding: 10px 15px;
+      gap: 10px;
+      margin: 8px 0;
+      background: #ffffff00;
+      padding: 8px;
+      border-radius: 8px;
     }
-
-    #slider-wrapper {
-      position: relative;
-      width: 165px;
-      height: 10px;
-    }
-
-    #slider-track {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 6px;
-      background: #ffffff;
-      border-radius: 3px;
-      transform: translateY(-50%);
-    }
-
-    #clock-thumb {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 50px; 
-        height: 50px; 
-        transform: translate(-50%, -50%);
-        cursor: pointer;
-    }
-
-
-    #timer-display {
-        font-family: 'Ubuntu Mono', monospace;
-        font-size: 20px;
-        font-weight: bold;
-        color: white;
-        min-width: 70px; /* largeur minimale pour ne pas bouger */
-        text-align: left; /* aligne le texte à gauche pour ne pas chevaucher la lune */
-        margin-left: 15px; /* décale légèrement à droite */
-    }
-
-    #timer-slider {
-      width: 200px;
-    }
-
-
-/* MOUSE DRAW -------------------------------- */
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    /* Canvas en arrière-plan */
-    canvas {
-      position: fixed; /* ou absolute */
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none; /* permet de cliquer à travers le canvas si nécessaire */
-      z-index: 1000;       /* au-dessus de tout le reste */
-      display: block;      /* s’assure qu’il n’est pas inline */
-    }
-
-
-
-
-/* MOBILE -------------------------------------- */
-
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-        justify-content: flex-start;
-        text-align: center;
-      }
-      .right {
-        margin-top: 2rem;
-      }
-
-      /* Ici on adapte la taille du h1 */
-      .left h1 {
-        font-size: 2rem;
-      }
-      
-    }
-
-
-
-/* Onglets planning, a propos, next shows ---------------------- */ 
-
-    /* Style général du tableau */
-    #planning {
-      width: 100%;
-      max-width: 5000px;
-      border-collapse: collapse; /* supprime les doubles bordures */
-      margin-top: 20px;
-      color: yellow;            /* texte en jaune */
-      font-family: 'Ubuntu Mono', monospace; /* optionnel, pour le thème */
-      table-layout: fixed; /* taille des colonnes fixée */
-    }
-
-    /* Supprimer toutes les bordures */
-    #planning th,
-    #planning td {
-      border: none;        /* pas de lignes autour des cellules */
-      padding: 8px;        /* espace à l'intérieur des cellules */
-      text-align: left;    /* texte aligné à gauche */
-      width: 25%; /* 100% / 7 colonnes = ~14.28% chacune */
-      font-size: 14px;
-    }
-
-    /* titre en gras */
-    #planning th {
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-
-
-    .bottom .buttons {
-      display: flex;
-      gap: 10px; /* espace entre les deux boutons */
-    }
-
-    .bottom button {
-      background: white;
-      color: black;
-      font-family: 'Ubuntu Mono', monospace;
-      border: none;
+    .track img {
+      width: 40px;
+      height: 40px;
       border-radius: 6px;
-      padding: 6px 12px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.2s ease;
+      object-fit: cover;   /* garde le centre, rogne si nécessaire */
+      flex-shrink: 0;
     }
-    .bottom button:hover {
-      background: yellow;
+    .info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .title {
+      font-weight: bold;
+      color: yellow;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .artist {
+      color: yellow;
+      font-size: 0.9em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    
-/* Nasty merguez */
-    #merguez-rain {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none; /* ne bloque pas les clics */
-      overflow: hidden;
-      z-index: 2000;
-    }
-    
-    .merguez {
+
+
+
+/* CLASS BOTTOM : Boutons planning etc */ 
+
+    .bottom {
       position: absolute;
-      top: -50px;
-      font-size: 2rem;
-      animation: fall linear forwards;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%
     }
+
+
     
-    @keyframes fall {
-      from { transform: translateY(0); opacity: 1; }
-      to { transform: translateY(110vh); opacity: 0; }
+
+
+ /* planning */
+    h2 {
+    text-align: center;
+    color: rgb(255,255,0);
+    margin-bottom: 20px;
+  }
+
+  #schedule {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    justify-content: space-between;
+  }
+
+
+
+.schedule-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0%;
+  width: 98%;       /* largeur totale moins les marges */
+  box-sizing: border-box; /* pour inclure le padding et la marge dans la largeur */
+}
+
+
+  .day-column {
+    background: transparent;
+    border-radius: 8px;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .day-title {
+    text-transform: capitalize;
+    font-size: 1.05rem;
+    margin-bottom: 1px;
+    color: rgb(255,255,0);
+    padding-bottom: 4px;
+    text-align: left; 
+  }
+
+.show {
+  display: flex;
+  align-items: center; /* centre verticalement si hauteur différente */
+  gap: 15px; /* espace entre l’heure et le titre */
+  padding: 2px 0;
+}
+
+  .show:last-child { border-bottom: none; }
+
+  .show-time {
+    color: rgb(255,255,0);
+  }
+
+  .show-title {
+    
+    color: rgb(255,255,0);
+  }
+
+  @media (max-width:1200px) {
+    .schedule-container {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
-    
+  }
+
+.fade-in {
+  opacity: 0;                /* invisible au départ */
+  animation: fadeIn 0.3s ease forwards; /* applique l'animation */
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;              /* devient visible */
+  }
+}
+
+.fade-out {
+  opacity: 1;
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}

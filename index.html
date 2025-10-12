@@ -1,155 +1,522 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<!-- Import de la police Ubuntu Mono et Anton -->
-<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
-
-<!-- HEADER --------------------------------- -->
-
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>2AM. radio for friends</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="./images/icons/moon.png">
+  <title>2am radio for friends</title>
 
-  <!-- Fichiers JS <script src="/socket.io/socket.io.js"></script> -->
-  <script src="background_change.js" defer></script>
-  <script src="timer.js" defer></script>
-  <script src="btnBar.js" defer></script>
-  <script src="stream.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script> <!-- Howler.js pour le streaming -->
-  <script src="./mousedraw.js" defer></script>
-  <script src="APIplanning.js"></script>
+  <!-- Police pixel rétro -->
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+
   
+  <script src="planningR.js" defer></script>
+  <script src="background_change.js" defer></script>
+  <script src="history.js" defer></script>
+  <script src="popupManager.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="stream2.js" defer></script>
+ <script src="timer2.js" defer></script>
+  <style>
+    body {
+      height: 100%;
+      margin: 0;
+      background: #c0c0c0;
+      font-family: 'Ubuntu Mono', monospace;
+    }
+#time-display {
+  background: transparent;   /* plus de fond blanc */
+  border: none;             /* supprime la bordure */
+  font-family: 'Ubuntu Mono', monospace; /* garder le style pixel */
+  font-size: 22px;          /* taille plus lisible */
+  color: black;             /* couleur du texte */
+  width: 60px;              /* largeur fixe adaptée au chrono */
+  text-align: center;       /* centrer le texte */
+  padding: 0 4px;
+}
+    /* BARRE D’EN-TÊTE */
+    .window-header {
+      background: linear-gradient(to bottom, #000080 0%, #000060 100%);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 32px;
+      padding: 0 8px;
+      box-shadow: inset 1px 1px #8080ff, inset -1px -1px #000040;
+      width: 100%;
+      box-sizing: border-box;
+      border-bottom: 2px solid #808080;
+    }
 
-  <!-- CSS externe -->
-  <link rel="stylesheet" href="./style.css">
+    .window-title {
+      font-size: 14px;
+    }
 
+    .window-controls {
+      display: flex;
+      gap: 2px;
+    }
+
+    .window-btn {
+      width: 24px;
+      height: 22px;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      font-size: 12px;
+      line-height: 18px;
+      text-align: center;
+      cursor: pointer;
+      color: black;
+    }
+
+    .window-btn:active {
+      border-color: #808080 #fff #fff #808080;
+    }
+
+    /* CONTENU AVEC PLAYER À GAUCHE */
+    .window-content {
+      background: #e0e0e0;
+      color: black;
+      width: 100%;
+      box-sizing: border-box;
+      border-top: none;
+      border-left: 2px solid #fff;
+      border-right: 2px solid #808080;
+      border-bottom: 2px solid #808080;
+      height: 100px; /* hauteur de la zone grise */
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      gap: 20px;
+    }
+    #planning-control {
+  margin-left: auto; /* pousse le bouton complètement à droite */
+  /* descend de 3px */
+}
+#player-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 30px;
+  position: relative;
+  top: -14px; /* décale les boutons et le timer vers la droite */
+}
+    /* Player radio rétro */
+    #radio-player {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    #radio-player img#cover-art {
+      display: block;
+      width: 58px;
+      height: 58px;
+      flex-shrink: 0;
+      border: 2px solid #808080;
+      border-color: #fff #808080 #808080 #fff;
+      background: #c0c0c0;
+      object-fit: cover;
+    }
+
+    #play-btn {
+      background: #c0c0c0;
+      border: 2px solid #808080;
+      border-color: #fff #808080 #808080 #fff;
+      cursor: pointer;
+      width: 60px;
+      height: 60px;
+      padding: 2px;
+    }
+
+    #play-btn:active {
+      border-color: #808080 #fff #fff #808080;
+    }
+
+    #play-btn img {
+      width: 75%;
+      height: 75%;
+      object-fit: contain;
+    }
+
+    .track-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #track-title {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    #artist-name {
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .window-content {
+        flex-direction: column;
+        height: auto;
+      }
+    }
+
+    .track-info-line .label {
+      font-weight: bold;
+    }
+
+    .track-info-line .value {
+      color: #333;
+    }
+
+
+    /* Conteneur cover + infos */
+.track-info {
+  display: flex;
+  align-items: center; /* verticalement centré avec la cover */
+  gap: 10px;           /* espace entre cover et texte */
+}
+
+
+
+/* Texte sous forme verticale */
+.track-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* espace entre titre et artiste */
+  align-items: flex-start;
+}
+
+
+
+    .track-info-line {
+      display: flex;
+      align-items: center;
+      gap: 6px; /* espace entre label et box */
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .track-info-line .label {
+      font-weight: bold;
+    }
+
+  .artist-box {
+    background: #ffffff; 
+    border: 1px solid #808080; 
+    padding: 2px 6px;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    min-width: 120px;    
+    box-shadow: inset 1px 1px #000, inset -1px -1px #fff;
+
+  }
+
+  
+  .title-box {
+    background: #ffffff; 
+    border: 1px solid #808080; 
+    padding: 2px 6px;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    min-width: 120px;          
+    box-shadow: inset 1px 1px #000, inset -1px -1px #fff;
+
+  }
+
+    /* Bouton rétro pour ouvrir le planning */
+    .retro-btn {
+      margin: 0px 0px;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      padding: 6px 6px;
+      font-family: 'Pixelify Sans', sans-serif;
+      cursor: pointer;
+    }
+
+    .retro-btn:active {
+      border-color: #808080 #fff #fff #808080;
+    }
+
+  /* PLANNING */
+  .window-popup {
+    display: none;
+    position: fixed;
+    top: 50%; /* centrée verticalement */
+    left: 50%; /* centrée horizontalement */
+    transform: translate(-50%, -50%); /* centre exact */
+    background: #e0e0e0;
+    border: 2px solid #808080;
+    width: 80%;
+    max-width: 800px;
+    z-index: 999;
+    box-shadow: 4px 4px 0 #000;
+    cursor: default;
+  }
+
+  /* Curseur main sur l’en-tête pour le drag */
+  .window-popup .window-header {
+    cursor: move;
+  }
+
+  .popup-content {
+    height: auto;
+    padding: 10px;
+  }
+
+  /* Style du tableau de planning */
+  #planning {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    background: #dcdcdc;
+  }
+
+  #planning th {
+    background: #000080;
+    color: white;
+    border: 1px solid #808080;
+    padding: 6px;
+  }
+
+  #planning td {
+    border: 1px solid #808080;
+    padding: 8px;
+  }
+
+
+  /* Conteneur des jours */
+  #planning-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    background: #dcdcdc;
+    border: 2px solid #808080;
+    padding: 8px;
+    text-align: center;
+  }
+
+  /* Colonne d’un jour */
+  .day-column {
+    background: #f0f0f0;
+    border: 2px solid #b0b0b0;
+    padding: 6px;
+    box-shadow: inset 1px 1px #fff, inset -1px -1px #808080;
+    font-family: 'Ubuntu Mono', monospace;
+  }
+
+  /* Titre du jour */
+  .day-title {
+    background: #000080;
+    color: white;
+    padding: 4px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  /* Chaque émission */
+  .show {
+    background: #c0c0c0;
+    border: 1px solid #808080;
+    margin-bottom: 4px;
+    padding: 4px;
+    text-align: left;
+    font-size: 12px;
+  }
+
+  /* Heure d’émission */
+  .show-time {
+    font-weight: bold;
+    color: #000;
+  }
+
+  /* Titre d’émission */
+  .show-title {
+    margin-left: 4px;
+  }
+
+  /* Responsive : 2 colonnes sur mobile */
+  @media (max-width: 700px) {
+    #planning-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* 1 colonne sur très petit écran */
+  @media (max-width: 400px) {
+    #planning-container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
+ /* Popup historique */
+  #history-window {
+      width: 300px;  /* largeur */
+      height: 300px; /* hauteur */
+      max-width: 90%; /* responsive */
+  }
+
+  #historique {
+  display: flex;
+  flex-direction: column; /* une track par ligne */
+  height: 100%;           /* prend toute la hauteur du parent */
+  width: 100%;            /* prend toute la largeur du parent */
+  box-sizing: border-box; /* inclut padding dans la taille */
+  overflow-y: auto;       /* scroll si le contenu dépasse */
+}
+
+
+  #historique .track {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* gauche / droite */
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+
+  #historique .track-left {
+    display: flex;
+    align-items: center;
+  }
+
+  #historique .track-left img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid #808080;
+    margin-right: 8px;
+  }
+
+  #historique .track-info {
+    display: flex;
+    flex-direction: column; /* titre au-dessus de l’artiste */
+  }
+
+  .track-info .title {
+    font-weight: bold;
+    font-size: 13px;
+  }
+
+  .track-info .artist {
+    font-size: 11px;
+    color: #555;
+  }
+
+  .track .minutes-ago {
+    font-size: 11px;
+    color: #929191;
+    white-space: nowrap;
+    justify-content: end;
+  }
+
+
+
+
+  </style>
 </head>
 
-<div id="merguez-rain"></div>
-<!-- BODY ----------------------------------->
-
 <body>
-  
-  <!-- MOUSE DRAW -------------------------->
 
-  <canvas id="canvas"></canvas>
-
-
-  <!-- CLASS LEFT -------------------------->
-
-  <div class="left">
-    <h1>2AM.</h1>
-    <p>ambient music for friends</p>
+<div class="window-header">
+  <div class="window-title">2am. Ambient music for friends</div>
+  <div class="window-controls">
+    <div class="window-btn">X</div>
   </div>
+</div>
 
-  <!-- CLASS RIGHT -------------------------->
+<div class="window-content">
 
-  <div class="right">
+  <!-- Partie gauche : Play + Cover + Infos -->
+  <div id="radio-player">
+    <button id="play-btn">
+      <img id="play-icon" src="./images/pixel icon/play.png" alt="Play">
+    </button>
 
-    <!-- Player -->
-    <div id="radio-player">
-      <button id="play-btn">
-        <img id="play-icon"
-        src="https://static.vecteezy.com/system/resources/previews/026/997/083/large_2x/play-button-pixelated-rgb-color-ui-icon-music-player-bar-play-multimedia-file-simplistic-filled-8bit-graphic-element-retro-style-design-for-arcade-video-game-art-editable-isolated-image-vector.jpg"
-        alt="Play">
-      </button>
-        <div class="track-info">
-          <img id="cover-art" src="" alt="Cover">
-          <div>
-            <div id="track-title">Titre...</div>
-            <div id="artist-name">Artiste...</div>
-          </div>
+    <div class="track-info">
+      <img id="cover-art" src="https://via.placeholder.com/60x60?text=🎵" alt="Cover">
+      <div class="track-text">
+        <div class="track-info-line">
+          <span class="label">Titre:::</span>
+          <span class="title-box" id="title-text">Titre inconnu</span>
         </div>
-    </div>
-
-    <!-- Timer -->
-    <div id="timer-container">
-      <div id="slider-wrapper">
-        <div id="slider-track"></div>
-        <img id="clock-thumb" src="images/icons/clock.png" alt="Lune">
+        <div class="track-info-line">
+          <span class="label">Artiste:</span>
+          <span class="artist-box" id="artist-text">Artiste inconnu</span>
+        </div>
       </div>
-      <div id="timer-display">00:00</div>
+    </div>
+
+    <!-- Historique + Timer -->
+    <div id="player-controls">
+      <button id="open-history-btn" class="retro-btn">
+        <img src="./images/pixel icon/playlist.png" alt="Historique">
+      </button>
+
+      <button id="add-btn" class="retro-btn">
+        <img src="./images/pixel icon/moon 1.png" alt="+15 min" style="width:24px;height:24px;">
+      </button>
+
+      <input id="time-display" type="text" value="00:00"
+             title="Tapez une durée (mm:ss) et appuyez sur Entrée"
+             inputmode="numeric"/>
     </div>
   </div>
 
-  <!-- CLASS BOTTOM -------------------------->
+  <!-- Partie droite : Planning -->
+  <div id="planning-control">
+    <button id="open-planning-btn" class="retro-btn">
+      <img src="./images/pixel icon/calendar-month.png" alt="Planning">
+    </button>
+  </div>
 
-  <div class="bottom">
-
- <!-- Tableau Planning -->
-
-
-
- <table id="planning" style="display:none" >
-
-
-  <thead>
+</div>
 
 
-    <tr>
 
 
-      <th>Lundi</th>
 
+</div>
 
-      <th>Mardi</th>
-
-
-      <th>Mercredi</th>
-
-
-      <th>Jeudi</th>
-
-
-      <th>Vendredi</th>
-
-
-      <th>Samedi</th>
-
-
-      <th>Dimanche</th>
-
-
-    </tr>
-
-
-  </thead>
-
-
-  <tbody>
-
-
-    <tr id="planning-body">
-
-
-      <!-- Le contenu sera rempli en JS -->
-
-
-    </tr>
-
-
-  </tbody>
-
-
-</table>
-
-    <!-- Texte "À propos" caché au départ -->
-    <div id="about-text" style="display:none; max-width: 600px; margin-top: 10px;">
-      <p>
-        Ce projet explore l'interaction entre l'utilisateur et l'interface à travers des effets visuels 
-        dynamiques et un design minimaliste. Le but est de créer une expérience immersive et élégante.
-      </p>
-    </div>
-
-    <div class="buttons">
-      <button id="toggle-planning">Planning</button>
-      <button id="toggle-about">À propos</button>
+<!-- Fenêtre du planning (initialement cachée) -->
+<div id="planning-window" class="window-popup">
+  <div class="window-header">
+    <div class="window-title"> Planning 2am Radio</div>
+    <div class="window-controls">
+      <div class="window-btn" id="close-planning-btn">X</div>
     </div>
   </div>
 
+  <div class="window-content popup-content">
+    <div class="window-content popup-content">
+      <div id="planning-container">
+        Chargement du planning...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fenêtre de l'historique (initialement cachée) -->
+<div id="history-window" class="window-popup">
+  <div class="window-header">
+    <div class="window-title"> Historique 2am Radio</div>
+    <div class="window-controls">
+      <div class="window-btn" id="close-history-btn">X</div>
+    </div>
+  </div>
+
+  <div class="window-content popup-content">
+    <div class="window-content popup-content">
+      <div id="historique">
+        Chargement de l'historique...
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

@@ -1,8 +1,8 @@
 var backgrounds = [
   { start: 20, end: 9, url: 'images/backgrounds/background_matin2.gif' },
   { start: 9, end: 13, url: 'images/backgrounds/background_matin2.gif' },
-  { start: 13, end: 16, url: 'images/backgrounds/background_nuit.gif' },
-  { start: 16, end: 20, url: 'images/backgrounds/background_matin2.gif' }
+  { start: 13, end: 16, url: 'images/backgrounds/background_idm.gif' },
+  { start: 16, end: 23, url: 'images/backgrounds/background_idm.gif' }
 ];
 
 function isInRange(hour, start, end) {

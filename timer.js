@@ -1,121 +1,150 @@
-const sliderWrapper = document.getElementById('slider-wrapper');
-const clock = document.getElementById('clock-thumb');
-const display = document.getElementById('timer-display');
-const maxMinutes = 60;
+// ===============================
+//  2AM. RADIO – TIMER (intégré au player Howler)
+// ===============================
 
-let dragging = false;
-let totalSeconds = 0;
-let timerInterval;
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('time-display');
+  const addBtn = document.getElementById('add-btn');
 
-// Convertit position de la lune en minutes
-function positionToMinutes(x) {
-  const rect = sliderWrapper.getBoundingClientRect();
-  let percent = (x - rect.left) / rect.width;
-  percent = Math.max(0, Math.min(1, percent));
-  return Math.round(percent * maxMinutes);
-}
+  let timeRemaining = 0;
+  let timerInterval = null;
 
-// Met à jour la position de la lune en px selon minutes
-function minutesToPosition(minutes) {
-  const rect = sliderWrapper.getBoundingClientRect();
-  return (minutes / maxMinutes) * rect.width;
-}
+  // --- Fonctions utilitaires ---
+  function pad(n) { return String(n).padStart(2, '0'); }
 
-// Met à jour le timer display
-function updateDisplay(minutes, seconds = 0) {
-  display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds
-    .toString()
-    .padStart(2, '0')}`;
-
-  clock.style.left = `${minutesToPosition(minutes)}px`;
-}
-
-function lancerPluieMerguez() {
-  const rainContainer = document.getElementById("merguez-rain");
-  
-  for (let i = 0; i < 30; i++) { // nombre de merguez
-    const merguez = document.createElement("div");
-    merguez.classList.add("merguez");
-    merguez.textContent = "🌭"; // tu peux remplacer par <img src="merguez.png">
-    
-    // Position horizontale aléatoire
-    merguez.style.left = Math.random() * 100 + "vw";
-    // Taille aléatoire
-    merguez.style.fontSize = (1 + Math.random() * 2) + "rem";
-    // Durée de chute aléatoire
-    merguez.style.animationDuration = (3 + Math.random() * 3) + "s";
-    
-    rainContainer.appendChild(merguez);
-    
-    // Nettoyage après animation
-    merguez.addEventListener("animationend", () => merguez.remove());
+  function formatTime(sec) {
+    if (sec < 0) sec = 0;
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${pad(m)}:${pad(s)}`;
   }
-}
 
+  function refreshDisplay() {
+    if (document.activeElement !== input) {
+      input.value = formatTime(timeRemaining);
+    }
+  }
 
-// Lancer le timer
-function startTimer(minutes) {
-  clearInterval(timerInterval);
-  totalSeconds = minutes * 60;
+  function startTimer() {
+    if (timerInterval) return;
+    timerInterval = setInterval(() => {
+      if (timeRemaining > 0) {
+        timeRemaining--;
+        refreshDisplay();
+        if (timeRemaining === 0) {
+          stopTimer();
+          pausePlayer();
+        }
+      }
+    }, 1000);
+  }
 
-  // Sauvegarde dans localStorage pour reprendre après reload
-  const endTimestamp = Date.now() + totalSeconds * 1000;
-  localStorage.setItem('timerEnd', endTimestamp);
+  function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
 
-  function tick() {
-    const remaining = Math.max(0, Math.floor((endTimestamp - Date.now()) / 1000));
-    let mins = Math.floor(remaining / 60);
-    let secs = remaining % 60;
-    updateDisplay(mins, secs);
+  // --- Pause du player (robuste) ---
+  function pausePlayer(retry = 0) {
+    const MAX_RETRIES = 10;
+    const RETRY_DELAY_MS = 300;
 
-    if (remaining <= 0) {
-      clearInterval(timerInterval);
-      localStorage.removeItem('timerEnd');
-  
-      // 🎉 lancer la pluie de merguez
-      lancerPluieMerguez();
-
-      // 🔥 Stoppe le player
-      if (isPlaying) {
-        sound.pause();
-        playIcon.src = playIconUrl; // ✅ corrige l'icône
-        isPlaying = false;
+    // 1) Appel de la fonction publique exposée par stream.js
+    if (typeof window.pauseRadio === 'function') {
+      try {
+        window.pauseRadio();
+        return;
+      } catch (e) {
+        console.error("pauseRadio() a lancé une erreur:", e);
       }
     }
-  }
 
-  tick();
-  timerInterval = setInterval(tick, 1000);
-}
+    // 2) Fallback : si window.sound existe et a pause()
+    if (window.sound && typeof window.sound.pause === 'function') {
+      try {
+        if (typeof window.sound.playing === 'function') {
+          if (window.sound.playing()) window.sound.pause();
+          else window.sound.pause();
+        } else {
+          window.sound.pause();
+        }
+        console.log("pausePlayer: fallback via window.sound.pause()");
+        return;
+      } catch (err) {
+        console.error("Erreur lors du fallback pause:", err);
+      }
+    }
 
-// Drag de la lune
-clock.addEventListener('mousedown', (e) => {
-  dragging = true;
-  e.preventDefault();
-});
-document.addEventListener('mouseup', (e) => {
-  if (dragging) {
-    dragging = false;
-    const minutes = positionToMinutes(e.clientX);
-    startTimer(minutes);
-  }
-});
-document.addEventListener('mousemove', (e) => {
-  if (dragging) {
-    const minutes = positionToMinutes(e.clientX);
-    updateDisplay(minutes);
-  }
-});
-
-// Reprendre le timer si déjà en cours après reload
-document.addEventListener('DOMContentLoaded', function () {
-  const savedEnd = localStorage.getItem('timerEnd');
-  if (savedEnd) {
-    const remainingSeconds = Math.max(0, Math.floor((savedEnd - Date.now()) / 1000));
-    if (remainingSeconds > 0) {
-      totalSeconds = remainingSeconds;
-      const minutes = Math.floor(totalSeconds / 60);
-      startTimer(minutes);
+    // 3) Retry si player pas encore prêt
+    if (retry < MAX_RETRIES) {
+      console.log(`pausePlayer: player non prêt, retry ${retry+1}/${MAX_RETRIES} dans ${RETRY_DELAY_MS}ms`);
+      setTimeout(() => pausePlayer(retry + 1), RETRY_DELAY_MS);
+    } else {
+      console.warn("pausePlayer: impossible de trouver le player après plusieurs essais.");
     }
   }
+
+  // --- Parsing et application de l'input ---
+  function parseTime(str) {
+    if (!str) return 0;
+    str = str.trim();
+    if (str === '') return 0;
+
+    let match = str.match(/^(\d+):(\d{1,2})$/);
+    if (match) return parseInt(match[1]) * 60 + parseInt(match[2]);
+    if (/^\d+$/.test(str)) return parseInt(str) * 60;
+    match = str.match(/^(\d+)\s*m(?:in)?(?:\s*(\d+)\s*s(?:ec)?)?/i);
+    if (match) return parseInt(match[1]) * 60 + (match[2] ? parseInt(match[2]) : 0);
+    match = str.match(/^(\d+)\s*s$/i);
+    if (match) return parseInt(match[1]);
+    return null;
+  }
+
+  function applyInputValue() {
+    const raw = input.value.trim();
+    const secs = parseTime(raw);
+    if (secs === null) {
+      alert('Format invalide (ex: 15, 15:00, 1m30s)');
+      input.value = formatTime(timeRemaining);
+      return;
+    }
+
+    if (secs === 0) {
+      timeRemaining = 0;
+      stopTimer();
+      refreshDisplay();
+      return;
+    }
+
+    timeRemaining = secs;
+    refreshDisplay();
+    startTimer();
+  }
+
+  // --- Événements ---
+  addBtn.addEventListener('click', () => {
+    timeRemaining += 15 * 60; // +15 minutes
+    refreshDisplay();
+    startTimer();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      e.preventDefault();
+      applyInputValue();
+      input.blur();
+    }
+  });
+
+  input.addEventListener('blur', applyInputValue);
+
+  input.addEventListener('input', () => {
+    if (input.value.trim() === '') {
+      timeRemaining = 0;
+      stopTimer();
+    }
+  });
+
+  // --- Initialisation de l'affichage ---
+  refreshDisplay();
 });

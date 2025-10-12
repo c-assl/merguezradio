@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planning Radio - 2AM</title>
+
+<!-- Police Ubuntu Mono -->
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Ubuntu Mono', monospace;
+    color: rgb(255,255,0);
+    margin: 0;
+    padding: 30px;
+    background-color: #000000; /* ✅ fond noir remis */
+  }
+
+  h2 {
+    text-align: center;
+    color: rgb(255,255,0);
+    margin-bottom: 20px;
+  }
+
+  .schedule-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 18px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .day-column {
+    background: transparent;
+    border-radius: 8px;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .day-title {
+  text-transform: capitalize;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+  color: rgb(255,255,0);
+  /* border-bottom: 1px solid rgba(255,255,0,0.2); */ /* ✅ ligne supprimée */
+  padding-bottom: 4px;
+  text-align: left; /* ✅ alignement à gauche */
+}
+
+  .show {
+    margin: 6px 0;
+    padding: 4px 0;
+    border-bottom: 1px dashed rgba(255,255,0,0.12);
+  }
+
+  .show:last-child { border-bottom: none; }
+
+  .show-time {
+    font-size: 0.88rem;
+    color: rgb(255,255,0);
+  }
+
+  .show-title {
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: rgb(255,255,0);
+  }
+
+  @media (max-width:1200px) {
+    .schedule-container {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+  }
+</style>
+</head>
+<body>
+
+
+
+<div id="schedule" class="schedule-container">
+  <p style="grid-column:1/-1; text-align:center; color:rgb(255,255,0)">Chargement du planning…</p>
+</div>
+
+<script>
+function toISODateLocal(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
+
+function getWeekRange(date = new Date()) {
+  const day = date.getDay();
+  const sunday = new Date(date);
+  sunday.setHours(0,0,0,0);
+  sunday.setDate(date.getDate() - day);
+  const saturday = new Date(sunday);
+  saturday.setDate(sunday.getDate() + 6);
+  return { start: sunday, end: saturday };
+}
+
+async function fetchWeekSchedule(stationShortName = '2am_radio') {
+  const wk = getWeekRange();
+  const startStr = toISODateLocal(wk.start);
+  const endStr = toISODateLocal(wk.end);
+  const url = `https://2am-radio.fr:5443/api/station/${encodeURIComponent(stationShortName)}/schedule?start=${startStr}&end=${endStr}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Erreur HTTP ' + res.status);
+  return res.json();
+}
+
+function getISOFromShow(show, key) {
+  if (show[key]) return show[key];
+  if (show[key + '_timestamp']) return new Date(show[key + '_timestamp'] * 1000).toISOString();
+  return null;
+}
+
+async function renderSchedule() {
+  const container = document.getElementById('schedule');
+  container.innerHTML = '';
+  try {
+    const data = await fetchWeekSchedule('2am_radio');
+    const days = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+    const grouped = {};
+    days.forEach(d => grouped[d] = []);
+
+    (Array.isArray(data) ? data : (data.schedule || data.schedule_entries || []))
+      .forEach(show => {
+        const startISO = getISOFromShow(show, 'start');
+        if (!startISO) return;
+        const dt = new Date(startISO);
+        const dayName = days[dt.getDay()];
+        grouped[dayName].push({
+          startISO,
+          endISO: getISOFromShow(show, 'end'),
+          name: show.name || show.title || ""
+        });
+      });
+
+    const formatTime = t => {
+      const dt = new Date(t);
+      const hours = dt.getHours().toString().padStart(2,'0');
+      return `${hours}h`;
+    };
+
+
+    days.forEach(day => {
+      const col = document.createElement('div');
+      col.className = 'day-column';
+      let html = `<div class="day-title">${day}</div>`;
+
+      const shows = grouped[day] || [];
+      if (!shows.length) {
+        html += `<p style="opacity:0.8;">Aucune émission</p>`;
+      } else {
+        shows.sort((a,b) => new Date(a.startISO) - new Date(b.startISO));
+        shows.forEach(s => {
+          const cleanTitle = s.name.replace(/^Playlist:\s*/i, '');
+          html += `
+            <div class="show">
+              <div class="show-time">${formatTime(s.startISO)} - ${formatTime(s.endISO)}</div>
+              <div class="show-title">${cleanTitle}</div>
+            </div>
+          `;
+        });
+      }
+
+      col.innerHTML = html;
+      container.appendChild(col);
+    });
+  } catch (err) {
+    container.innerHTML = `<p style="grid-column:1/-1; text-align:center;">Erreur : ${err.message}</p>`;
+    console.error(err);
+  }
+}
+
+renderSchedule();
+</script>
+
+</body>
+</html>

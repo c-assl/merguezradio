@@ -1,6 +1,6 @@
 async function chargerPlanning() {
   try {
-    const response = await fetch("https://2am-radio.fr:5443/api/station/2am_radio/schedule");
+    const response = await fetch("https://2am-radio.fr:5443/public/2am_radio/schedule");
     const data = await response.json();
 
     // Jours en français (ordre lundi → dimanche)
